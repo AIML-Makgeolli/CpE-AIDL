@@ -1,1 +1,4 @@
+sources:
 
+1. Crop Recommendation Dataset - https://www.kaggle.com/atharvaingle/crop-recommendation-dataset
+2. Crop Recommender Dataset with Soil Nutrients - https://www.kaggle.com/manikantasanjayv/crop-recommender-dataset-with-soil-nutrients
