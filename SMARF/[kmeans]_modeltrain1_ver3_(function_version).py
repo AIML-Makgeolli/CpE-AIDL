@@ -10,6 +10,7 @@ Original file is located at
 import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
+from sklearn import metrics
 from sklearn.model_selection import train_test_split
 from numpy import sqrt, array, random, argsort
 from sklearn.preprocessing import scale
@@ -49,6 +50,16 @@ class kMeans():
     self.km = KMeans(n_clusters = clust)
     self.clusters = self.km.fit_predict(self.data)
     self.clust_data = plt.scatter(*zip(*self.data),c=self.clusters)
+    
+    self.labels = self.km.labels_
+    
+    print(self.labels)
+    print("Silhouette Coefficient: %0.3f" % metrics.silhouette_score(self.data, self.labels))
+    print("Homogeneity: %0.3f" % metrics.homogeneity_score(self.clusters, self.labels))
+    print("Completeness: %0.3f" % metrics.completeness_score(self.clusters, self.labels))
+    print("V-measure: %0.3f" % metrics.v_measure_score(self.clusters, self.labels))
+    print("Adjusted Rand Index: %0.3f" % metrics.adjusted_rand_score(self.clusters, self.labels))
+    print("Adjusted Mutual Information: %0.3f"% metrics.adjusted_mutual_info_score(self.clusters, self.labels))
     return self.clust_data
   
   def kmeans_outlier(self,threshold):
