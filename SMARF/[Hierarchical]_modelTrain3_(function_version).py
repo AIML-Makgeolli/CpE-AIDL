@@ -15,12 +15,16 @@ References:
 import numpy as np
 import pandas as pd
 from sklearn.cluster import AgglomerativeClustering
+from sklearn import metrics
 from sklearn.model_selection import train_test_split
 from numpy import sqrt, array, random, argsort
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
-from scipy.cluster.hierarchy import dendrogram, linkage
+from scipy.cluster.hierarchy import dendrogram, linkage, centroid, fcluster
 import scipy.cluster.hierarchy as shc
+from scipy.spatial.distance import cdist, pdist
+from sklearn.neighbors import NearestCentroid
+
 
 
 #from google.colab import drive
@@ -41,7 +45,7 @@ y = df_train[['ph']]
 """Nitrogen and ph """
 
 class hierarchical():
-  def __init__(self):
+      def __init__(self):
     return
 
   def input_train(self, X_in, y_in):
@@ -58,12 +62,39 @@ class hierarchical():
 
   def cluster_fit(self, clust):
     self.cluster = AgglomerativeClustering(n_clusters = clust, affinity ='euclidean', linkage='ward')
-    res = self.cluster.fit_predict(self.data)
-    return res
+    self.res = self.cluster.fit_predict(self.data)
+    
+    self.labels = self.cluster.labels_
+    
+    print(self.labels)
+    print("Silhouette Coefficient: %0.3f" % metrics.silhouette_score(self.data, self.labels))
+    print("Homogeneity: %0.3f" % metrics.homogeneity_score(self.res, self.labels))
+    print("Completeness: %0.3f" % metrics.completeness_score(self.res, self.labels))
+    print("V-measure: %0.3f" % metrics.v_measure_score(self.res, self.labels))
+    print("Adjusted Rand Index: %0.3f" % metrics.adjusted_rand_score(self.res, self.labels))
+    print("Adjusted Mutual Information: %0.3f"% metrics.adjusted_mutual_info_score(self.res, self.labels))
+    return self.res
+  
+  def outlier(self,threshold):
+    clf = NearestCentroid()
+    clf.fit(self.data, self.res)
+    self.centroids = clf.centroids_
+    self.points = np.empty((0,len(self.data[0])), float)
+    self.distances = np.empty((0,len(self.data[0])), float)
+    for i, center_elem in enumerate(self.centroids):
+      self.distances = np.append(self.distances, cdist([center_elem],self.data[self.res == i], 'euclidean')) 
+      self.points = np.append(self.points, self.data[self.res == i], axis=0)
+      
+    percentile = threshold
+    self.outliers = self.points[np.where(self.distances > np.percentile(self.distances, percentile))]
+    outliers_df = pd.DataFrame(self.outliers,columns =['X','y'])
+    return outliers_df
 
   def cluster_graph(self):
     plt.figure(figsize=(7, 5))
     plt.scatter(self.data[:,0], self.data[:,1], c=self.cluster.labels_, cmap='rainbow')
+    plt.scatter(*zip(*self.outliers),marker="o",facecolor="None",edgecolor="g",s=70); 
+    plt.scatter(*zip(*self.centroids),marker="o",facecolor="b",edgecolor="b",s=20);
 
 
 hierarchical_test = hierarchical()
@@ -76,6 +107,8 @@ hierarchical_test.dendograms()
 
 hierarchical_test.cluster_fit(3)
 
+hierarchical_test.outlier(80)
+
 hierarchical_test.cluster_graph()
 
 """Phosphorus and pH"""
@@ -85,6 +118,8 @@ hierarchical_test.input_train(X_P,y)
 hierarchical_test.dendograms()
 
 hierarchical_test.cluster_fit(3)
+
+hierarchical_test.outlier(80)
 
 hierarchical_test.cluster_graph()
 
@@ -96,6 +131,8 @@ hierarchical_test.dendograms()
 
 hierarchical_test.cluster_fit(3)
 
+hierarchical_test.outlier(80)
+
 hierarchical_test.cluster_graph()
 
 """Temperature and pH"""
@@ -106,6 +143,8 @@ hierarchical_test.dendograms()
 
 hierarchical_test.cluster_fit(3)
 
+hierarchical_test.outlier(80)
+
 hierarchical_test.cluster_graph()
 
 """Moisture and pH"""
@@ -115,5 +154,7 @@ hierarchical_test.input_train(X_moist,y)
 hierarchical_test.dendograms()
 
 hierarchical_test.cluster_fit(3)
+
+hierarchical_test.outlier(80)
 
 hierarchical_test.cluster_graph()

@@ -37,7 +37,7 @@ X_moist = df_train[['humidity']]
 y = df_train[['ph']] #.iloc[:100]
 
 class kMeans():
-  def __init__(self):
+      def __init__(self):
     return
     
   def input_train(self, X_in, y_in):
@@ -60,9 +60,10 @@ class kMeans():
     print("V-measure: %0.3f" % metrics.v_measure_score(self.clusters, self.labels))
     print("Adjusted Rand Index: %0.3f" % metrics.adjusted_rand_score(self.clusters, self.labels))
     print("Adjusted Mutual Information: %0.3f"% metrics.adjusted_mutual_info_score(self.clusters, self.labels))
+    
     return self.clust_data
   
-  def kmeans_outlier(self,threshold):
+  def outlier(self,threshold):
     self.centroids = self.km.cluster_centers_
     self.points = np.empty((0,len(self.data[0])), float)
     self.distances = np.empty((0,len(self.data[0])), float)
@@ -89,7 +90,7 @@ kmeanstest.input_train(X_N,y)
 
 kmeanstest.kmeans_test(3)
 
-kmeanstest.kmeans_outlier(80)
+kmeanstest.outlier(80)
 
 kmeanstest.kmeans_results()
 
@@ -99,7 +100,7 @@ kmeanstest.input_train(X_P,y)
 
 kmeanstest.kmeans_test(3)
 
-kmeanstest.kmeans_outlier(80)
+kmeanstest.outlier(80)
 
 kmeanstest.kmeans_results()
 
@@ -109,7 +110,7 @@ kmeanstest.input_train(X_K,y)
 
 kmeanstest.kmeans_test(3)
 
-kmeanstest.kmeans_outlier(80)
+kmeanstest.outlier(80)
 
 kmeanstest.kmeans_results()
 
@@ -119,7 +120,7 @@ kmeanstest.input_train(X_temp,y)
 
 kmeanstest.kmeans_test(3)
 
-kmeanstest.kmeans_outlier(80)
+kmeanstest.outlier(80)
 
 kmeanstest.kmeans_results()
 
@@ -129,6 +130,6 @@ kmeanstest.input_train(X_moist,y)
 
 kmeanstest.kmeans_test(3)
 
-kmeanstest.kmeans_outlier(80)
+kmeanstest.outlier(80)
 
 kmeanstest.kmeans_results()
