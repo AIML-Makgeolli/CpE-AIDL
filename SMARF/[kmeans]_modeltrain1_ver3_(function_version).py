@@ -38,7 +38,7 @@ y = df_train[['ph']] #.iloc[:100]
 
 class kMeans():
       def __init__(self):
-    return
+    return self
     
   def input_train(self, X_in, y_in):
     self.X = X_in
